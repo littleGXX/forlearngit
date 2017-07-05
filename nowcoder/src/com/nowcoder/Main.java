@@ -164,7 +164,7 @@ public class Main {
 
     public static void demoCommon(){
         Random random = new Random();
-        random.setSeed(1);
+//        random.setSeed(1);
         for (int i = 0; i < 4; ++i){
             print(1, random.nextInt(100));
             print(2, random.nextDouble());
@@ -185,7 +185,19 @@ public class Main {
         print(10, Math.max(1, 2));
         print(11, Math.ceil(2.2));
         print(12, Math.floor(2.5));
-        print(13, Math.log(2.71)); //e
+        print(13, Math.log(2.71));
+    }
+
+    public static Animal getAnimal(int type) {
+        //return new Animal("2", 1);
+        return new Human("Lei", 22, "CN");
+    }
+
+    public static void demoClass() {
+        Talking animal = new Animal("Jim", 1);
+        animal.say();
+        animal = new Human("Lei", 11, "CN");
+        animal.say();
     }
 
     public static void main(String[] args) {
@@ -195,6 +207,7 @@ public class Main {
 //        demoSet();
 //        demoKeyValue();
 //        demoException();
-        demoCommon();
+//        demoCommon();
+        demoClass();
     }
 }
