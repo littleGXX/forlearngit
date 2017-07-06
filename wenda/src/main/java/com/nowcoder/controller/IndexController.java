@@ -26,22 +26,34 @@ import java.util.*;
 public class IndexController {
     private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 
+    // 把一些对象构造好了大家可用
     @Autowired
     WendaService wendaService;
 
+    /*
+    @RequestMapping("/")
+    @ResponseBody   // 如果需要返回一个复杂的页面，则需要把@ResponseBody注释掉；返回的对象就到templates中去找要返回的文件
+    public String index() {
+        return "Hello NowCoder";
+    }
+     */
+
     @RequestMapping(path = {"/", "/index"}, method = {RequestMethod.GET})
-    @ResponseBody
+    @ResponseBody   // 通过ResponseBody返回字符串
     public String index(HttpSession httpSession) {
         logger.info("VISIT HOME");
+        // httpSession.setAttribute("msg", "jump from redirect");
         return wendaService.getMessage(2) + "Hello NowCoder" + httpSession.getAttribute("msg");
     }
 
+    // 127.0.0.1:8080/profile/usr/123?type=2
+    // 127.0.0.1:8080/profile/usr/123?type=2&key=zz
     @RequestMapping(path = {"/profile/{groupId}/{userId}"})
     @ResponseBody
     public String profile(@PathVariable("userId") int userId,
                           @PathVariable("groupId") String groupId,
                           @RequestParam(value = "type", defaultValue = "1") int type,
-                          @RequestParam(value = "key", required = false) String key) {
+                          @RequestParam(value = "key", defaultValue = "a", required = false) String key) {
         return String.format("Profile Page of %s / %d, t:%d k: %s", groupId, userId, type, key);
     }
 
@@ -60,14 +72,16 @@ public class IndexController {
         return "home";
     }
 
+    // 127.0.0.1:8080/request?type=2
     @RequestMapping(path = {"/request"}, method = {RequestMethod.GET})
     @ResponseBody
-    public String request(Model model, HttpServletResponse response,
+    public String request(Model model,
+                           HttpServletResponse response,
                            HttpServletRequest request,
                            HttpSession httpSession,
                           @CookieValue("JSESSIONID") String sessionId) {
         StringBuilder sb = new StringBuilder();
-        sb.append("COOKIEVALUE:" + sessionId);
+        sb.append("COOKIEVALUE:" + sessionId);  // 直接读取cookie中JSESSIONID的值
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String name = headerNames.nextElement();
@@ -89,10 +103,19 @@ public class IndexController {
         return sb.toString();
     }
 
+    /*
+    * 默认status:302的临时跳转
+    @RequestMapping(path = {"/redirect/{code}"}, method = {RequestMethod.GET})
+    public String redirect(@PathVariable("code") int code) {
+        return "redirect:/";
+    }
+    */
     @RequestMapping(path = {"/redirect/{code}"}, method = {RequestMethod.GET})
     public RedirectView redirect(@PathVariable("code") int code,
                                  HttpSession httpSession) {
+        // 把消息放在session里面
         httpSession.setAttribute("msg", "jump from redirect");
+        // status:301的永久跳转
         RedirectView red = new RedirectView("/", true);
         if (code == 301) {
             red.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
@@ -112,6 +135,7 @@ public class IndexController {
     @ExceptionHandler()
     @ResponseBody
     public String error(Exception e) {
-        return "error:" + e.getMessage();
+        // error:参数不对
+         return "error:" + e.getMessage();
     }
 }

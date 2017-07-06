@@ -29,10 +29,15 @@
     #set($title = "nowcoder_title")
     Title: $!{title}
 
-
+    #*
+    Parse会做模板解析，Include针对静态文本，效率更高
+    *#
     Parse: #parse("header.html")
     Include: #include("header.html")
 
+    #*
+    macro是宏，render_color是函数名
+    *#
     #macro (render_color, $index, $color)
         Color Render Macro $index, $color
     #end
